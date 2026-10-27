@@ -1,6 +1,7 @@
 package pe.upeu.agrosierra.servicio
 
 import org.springframework.http.HttpStatus
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import pe.upeu.agrosierra.dominio.Labor
@@ -11,6 +12,7 @@ import pe.upeu.agrosierra.repositorio.LoteRepositorio
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant
+import java.time.LocalDate
 
 @Service
 class LaborServicio(
@@ -19,12 +21,14 @@ class LaborServicio(
     private val reloj: Clock = Clock.systemUTC(),
 ) {
     @Transactional
+    @PreAuthorize("hasAuthority('LABOR_CREAR')")
     fun registrar(labor: Labor, usuarioId: Long): LaborGuardada {
         validarLoteYDosificacion(labor)
         return labores.crear(labor, usuarioId)
     }
 
     @Transactional
+    @PreAuthorize("hasAuthority('LABOR_EDITAR')")
     fun editar(labor: Labor, usuarioId: Long, rol: String): LaborGuardada {
         val anterior = labores.buscar(labor.id)
             ?: throw ErrorRegla(HttpStatus.NOT_FOUND, "Labor no encontrada")
@@ -42,7 +46,15 @@ class LaborServicio(
             ?: throw ErrorRegla(HttpStatus.NOT_FOUND, "Labor no encontrada")
     }
 
+    @Transactional
+    @PreAuthorize("hasAuthority('LABOR_ELIMINAR')")
+    fun eliminar(id: Long) {
+        if (!labores.eliminar(id)) throw ErrorRegla(HttpStatus.NOT_FOUND, "Labor no encontrada")
+    }
+
     private fun validarLoteYDosificacion(labor: Labor) {
+        try { LocalDate.parse(labor.fecha) }
+        catch (_: Exception) { throw ErrorRegla(HttpStatus.BAD_REQUEST, "Fecha ISO-8601 inválida", "fecha") }
         val lote = lotes.buscar(labor.loteId)
             ?: throw ErrorRegla(HttpStatus.NOT_FOUND, "Lote no encontrado")
         if (lote.campaniaCerrada) {

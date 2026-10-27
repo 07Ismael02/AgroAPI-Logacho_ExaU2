@@ -1,6 +1,7 @@
 package pe.upeu.agrosierra.servicio
 
 import org.springframework.http.HttpStatus
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import pe.upeu.agrosierra.dominio.Lote
@@ -13,6 +14,7 @@ class CampaniaServicio(
     private val labores: LaborRepositorio,
 ) {
     @Transactional
+    @PreAuthorize("hasAuthority('CAMPANIA_CERRAR')")
     fun cerrar(loteId: Long): Lote {
         val lote = lotes.buscar(loteId)
             ?: throw ErrorRegla(HttpStatus.NOT_FOUND, "Lote no encontrado")
