@@ -76,8 +76,8 @@ Controladores REST delgados → servicios con autorización por privilegio y reg
 
 ## Colección API
 
-`docs/AgroAPI_Logacho.postman_collection.json` (Postman v2.1) contiene las nueve rutas y ejemplos de 400, 401 y 403. `docs/api-coleccion-ejecucion.txt` registra una ejecución real de esas peticiones contra esta versión.
+`docs/AgroAPI_Logacho.postman_collection.json` (Postman v2.1) contiene las nueve rutas, un caso 400, un caso 401 y tres casos 403 (16 peticiones). `docs/http-verificacion.tsv` y `docs/api-coleccion-ejecucion.txt` registran una ejecución real de esas peticiones contra `develop fa6b809`: endpoint, usuario, código esperado, código obtenido y respuesta.
 
 ## Cambio sorpresa
 
-Pendiente: el docente aún no ha asignado la letra (SC-A/B/C/D). No se ha implementado ningún cambio sorpresa.
+No asignado por el docente. No se implementó ninguna variante SC-A/B/C/D.
