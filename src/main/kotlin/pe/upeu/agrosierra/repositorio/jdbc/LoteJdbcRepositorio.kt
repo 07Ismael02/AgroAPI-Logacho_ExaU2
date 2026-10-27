@@ -43,5 +43,5 @@ class LoteJdbcRepositorio(private val jdbc: JdbcTemplate) : LoteRepositorio {
     }
 
     override fun cerrarCampania(id: Long): Boolean =
-        jdbc.update("UPDATE lote SET campania_cerrada = TRUE WHERE id = ?", id) == 1
+        jdbc.update("UPDATE lote SET campania_cerrada = TRUE WHERE id = ? AND campania_cerrada = FALSE", id) == 1
 }
