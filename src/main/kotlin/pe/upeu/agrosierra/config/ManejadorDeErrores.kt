@@ -11,6 +11,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.core.AuthenticationException
 import pe.upeu.agrosierra.servicio.ErrorRegla
+import tools.jackson.core.JacksonException
 
 @RestControllerAdvice
 class ManejadorDeErrores(private val errores: RespuestaError) {
@@ -27,8 +28,15 @@ class ManejadorDeErrores(private val errores: RespuestaError) {
     }
 
     @ExceptionHandler(HttpMessageNotReadableException::class)
-    fun cuerpoInvalido(e: HttpMessageNotReadableException, request: HttpServletRequest): ResponseEntity<CuerpoError> =
-        ResponseEntity.badRequest().body(errores.cuerpo(HttpStatus.BAD_REQUEST, "JSON inválido", request.requestURI))
+    fun cuerpoInvalido(e: HttpMessageNotReadableException, request: HttpServletRequest): ResponseEntity<CuerpoError> {
+        val campo = generateSequence(e.cause) { it.cause }
+            .filterIsInstance<JacksonException>()
+            .flatMap { it.path.asSequence() }
+            .mapNotNull { it.propertyName }
+            .firstOrNull { it in setOf("loteId", "tipo", "fecha", "cantidad", "observacion") }
+        return ResponseEntity.badRequest().body(errores.cuerpo(HttpStatus.BAD_REQUEST, "JSON inválido",
+            request.requestURI, campo?.let { mapOf(it to "Valor inválido") }))
+    }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException::class)
     fun parametroInvalido(e: MethodArgumentTypeMismatchException, request: HttpServletRequest): ResponseEntity<CuerpoError> =
