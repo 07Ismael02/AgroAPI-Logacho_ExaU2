@@ -14,7 +14,10 @@ import pe.upeu.agrosierra.repositorio.LoteRepositorio
 import pe.upeu.agrosierra.repositorio.UsuarioRepositorio
 
 @SpringBootTest
-@TestPropertySource(properties = ["agro.datasource.url=jdbc:h2:mem:agro_semilla_test;DB_CLOSE_DELAY=-1"])
+@TestPropertySource(properties = [
+    "agro.datasource.url=jdbc:h2:mem:agro_semilla_test;DB_CLOSE_DELAY=-1",
+    "agro.jwt.secret=clave-exclusiva-de-pruebas-AgroSierra-2026"
+])
 class PersistenciaSemillaTest {
     @Autowired lateinit var jdbc: JdbcTemplate
     @Autowired lateinit var lotes: LoteRepositorio
